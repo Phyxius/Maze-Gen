@@ -25,8 +25,8 @@ namespace MazeGenSolve
 
         private static void Main(string[] args)
         {
-            videoMode = new VideoMode(800,800);
-            RenderWindow window = new RenderWindow(VideoMode.DesktopMode, "Maze Crap", Styles.None);
+            videoMode = VideoMode.DesktopMode;
+            RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.None);
             window.ShowMouseCursor(false);
             window.Closed += (sender, e) => ((RenderWindow) sender).Close();
             window.KeyPressed +=
@@ -37,8 +37,9 @@ namespace MazeGenSolve
             float WaitTime = 0;
             float fps = .01f;
             while (GenerateIterate(CellStack, Cells, Walls)) ;
-            
-            CellStack.Clear();
+            //FinishedGenerating = true;
+            //Solving = true;
+            //CellStack.Clear();
             //while (SolveIterate(CellStack, Cells, Walls, StartCell, EndCell)) ;
             window.Show(true);
             while (window.IsOpened())
@@ -74,7 +75,9 @@ namespace MazeGenSolve
                             FinishedGenerating = false;
                             FinishedSolving = false;
                             SetUpMaze();
+                            continue;
                         }
+                        continue;
                     }
                     if (Solving && !FinishedSolving)
                     {
@@ -136,6 +139,9 @@ namespace MazeGenSolve
             Walls = new bool[videoMode.Width/10 - 2,videoMode.Height/10 - 2];
             VisitedWalls = new bool[videoMode.Width/10 - 2,videoMode.Height/10 - 2];
             CellStack = new Stack<IntPair>();
+            FinishedGenerating = false;
+            Solving = false;
+            CurrentCell = new IntPair();
             /*for (int i = 0; i < Cells.GetLength(0); i++)
                 for (int j = 0; j < Cells.GetLength(1); j++)
                     Cells[i, j] = (i%2 == 1);*/
@@ -153,8 +159,7 @@ namespace MazeGenSolve
                 return;
             }
             //r.Draw(Shape.Rectangle(new FloatRect(0, 0, r.Width, r.Height), Color.Black));
-            target = new Image(r.Width/10, r.Height/10);
-            target.Smooth = false;
+            target = new Image(r.Width/10, r.Height/10) {Smooth = false};
             for (int i = 0; i < Walls.GetLength(0); i++)
                 for (int j = 0; j < Walls.GetLength(1); j++)
                     if (!Walls[i,j] && !VisitedWalls[i, j]) //&& (!Solving || !CellStack.Contains(new IntPair(i, j))))
@@ -169,7 +174,7 @@ namespace MazeGenSolve
             if (!Solving)
                 //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X*2 + 1)*10, (CurrentCell.Y*2 + 1)*10, 10, 10),
                 //Color.Red));
-                target.SetPixel((uint)CurrentCell.X+1, (uint)CurrentCell.Y+1, Color.Red);
+                target.SetPixel((uint)CurrentCell.X*2+1, (uint)CurrentCell.Y*2+1, Color.Red);
             if (FinishedGenerating)
                 //r.Draw(Shape.Rectangle(new FloatRect((EndCell.X*2 + 1)*10, (EndCell.Y*2 + 1)*10, 10, 10), Color.Green));
                 target.SetPixel((uint) EndCell.X*2+1, (uint) EndCell.Y*2+1, Color.Green);
@@ -186,7 +191,7 @@ namespace MazeGenSolve
                     target.SetPixel((uint) i.X + 1, (uint) i.Y + 1, Color.Green);
                 //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X + 1) * 10, (CurrentCell.Y + 1) * 10, 10, 10),
                                        //Color.Red));
-                target.SetPixel((uint) CurrentCell.X + 1, (uint) CurrentCell.Y + 1, Color.Red);
+                target.SetPixel((uint) (CurrentCell.X * (Solving ? 1 : 2) + 1), (uint) CurrentCell.Y + 1, Color.Red);
             }
             //r.Draw(Shape.Rectangle(new FloatRect((StartCell.X*2 + 1)*10, (StartCell.Y*2 + 1)*10, 10, 10), Color.Blue));
             target.SetPixel((uint) StartCell.X*2 + 1, (uint) StartCell.Y*2 + 1, Color.Blue);
@@ -266,18 +271,25 @@ namespace MazeGenSolve
         public static bool CheckNeighbors(IntPair start, IntPair neighbor, bool[,] Maze, bool[,] Walls)
         {
             bool ret = true;
-            IntPair temp = neighbor*2 + new IntPair(0, 1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
-                ret = ret && temp == start || Walls[temp.X, temp.Y];
-            temp = neighbor + new IntPair(1, 0);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || Walls[temp.X, temp.Y]);
-            temp = neighbor*2 + new IntPair(-1, 0);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || Walls[temp.X, temp.Y]);
-            temp = neighbor*2 + new IntPair(0, -1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || Walls[temp.X, temp.Y]);
+            try
+            {
+                IntPair temp = neighbor * 2 + new IntPair(0, 1);
+                if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
+                    ret = ret && temp == start || Walls[temp.X, temp.Y];
+                temp = neighbor + new IntPair(1, 0);
+                if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
+                    ret = ret && (temp == start || Walls[temp.X, temp.Y]);
+                temp = neighbor * 2 + new IntPair(-1, 0);
+                if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
+                    ret = ret && (temp == start || Walls[temp.X, temp.Y]);
+                temp = neighbor * 2 + new IntPair(0, -1);
+                if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) && temp.X > 0 && temp.Y > 0)
+                    ret = ret && (temp == start || Walls[temp.X, temp.Y]);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                return false;
+            }
             /*temp = neighbor*2 + new IntPair(1, 1);
             if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) - 1 && temp.X > 0 && temp.Y > 0)
                 ret = ret && (temp == start || !Maze[temp.X, temp.Y]);
