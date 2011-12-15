@@ -23,20 +23,27 @@ namespace MazeGenSolve
         private static bool NeedsRedraw;
         private static Image target;
 
+        private static Color CurrentCellColor = ConvertColor(Properties.Settings.Default.CurrentCellColor),
+                             ForegroundColor = ConvertColor(Properties.Settings.Default.ForegroundColor),
+                             VisitedCellColor = ConvertColor(Properties.Settings.Default.VisitedCellColor),
+                             EndCellColor = ConvertColor(Properties.Settings.Default.EndCellColor),
+                             BeginCellColor = ConvertColor(Properties.Settings.Default.BeginCellColor),
+                             BackgroundColor = ConvertColor(Properties.Settings.Default.BackgroundColor),
+                             PathColor = ConvertColor(Properties.Settings.Default.PathColor);
+
         private static void Main(string[] args)
         {
             videoMode = VideoMode.DesktopMode;
-            RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.None);
+            RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.Titlebar);
             window.ShowMouseCursor(false);
-            window.Closed += (sender, e) => ((RenderWindow) sender).Close();
-            window.KeyPressed +=
-                delegate(object sender, KeyEventArgs e) { if (e.Code == KeyCode.Escape) ((RenderWindow) sender).Close(); };
+            window.Closed += (sender, e) => System.Windows.Forms.Application.Exit(); //((RenderWindow) sender).Close();
+            window.KeyPressed += (sender, e) => ((RenderWindow) sender).Close();
             SetUpMaze();
-            target = new Image(VideoMode.DesktopMode.Width/10,VideoMode.DesktopMode.Height/10);
+            target = new Image(VideoMode.DesktopMode.Width/10, VideoMode.DesktopMode.Height/10) { Smooth = false};
             float accumulator = 0;
             float WaitTime = 0;
             float fps = .01f;
-            while (GenerateIterate(CellStack, Cells, Walls)) ;
+            //while (GenerateIterate(CellStack, Cells, Walls)) ;
             //FinishedGenerating = true;
             //Solving = true;
             //CellStack.Clear();
@@ -47,7 +54,7 @@ namespace MazeGenSolve
                 accumulator += window.GetFrameTime();
                 while (accumulator > fps)
                 {
-                    
+
                     if (FinishedGenerating && !Solving)
                     {
                         if (WaitTime < 2)
@@ -81,11 +88,24 @@ namespace MazeGenSolve
                     }
                     if (Solving && !FinishedSolving)
                     {
-                        FinishedSolving =  !SolveIterate(CellStack, Cells, Walls, StartCell, EndCell);
+                        if (Properties.Settings.Default.ShowSolving)
+                            FinishedSolving = !SolveIterate(CellStack, Cells, Walls, StartCell, EndCell);
+                        else
+                        {
+                            while (SolveIterate(CellStack, Cells, Walls, StartCell, EndCell)) ;
+                            FinishedSolving = true;
+                        }
                         accumulator -= fps;
                         continue;
                     }
+
+                    if (Properties.Settings.Default.ShowGeneration)
                         FinishedGenerating = !GenerateIterate(CellStack, Cells, Walls);
+                    else
+                    {
+                        while (GenerateIterate(CellStack, Cells, Walls)) ;
+                        FinishedGenerating = true;
+                    }
                     accumulator -= fps;
                     NeedsRedraw = true;
                 }
@@ -159,12 +179,16 @@ namespace MazeGenSolve
                 return;
             }
             //r.Draw(Shape.Rectangle(new FloatRect(0, 0, r.Width, r.Height), Color.Black));
-            target = new Image(r.Width/10, r.Height/10) {Smooth = false};
+            /*for (uint i = 0; i < target.Width; i++)
+                for (uint j = 0; j < target.Height; j++)
+                    target.SetPixel(i+1, j+1, BackgroundColor);*/
             for (int i = 0; i < Walls.GetLength(0); i++)
                 for (int j = 0; j < Walls.GetLength(1); j++)
                     if (!Walls[i,j] && !VisitedWalls[i, j]) //&& (!Solving || !CellStack.Contains(new IntPair(i, j))))
                         //r.Draw(Shape.Rectangle(new FloatRect((i + 1)*10, (j + 1)*10, 10, 10), Color.White));
-                        target.SetPixel((uint)i + 1, (uint)j + 1, Color.White);
+                        target.SetPixel((uint)i + 1, (uint)j + 1, ForegroundColor);
+                    else
+                        target.SetPixel((uint)i+1, (uint) j+1, BackgroundColor);
             /*for (int i = 0; i < Cells.GetLength(0); i++)
                 for (int j = 0; j < Cells.GetLength(1); j++)
                 {
@@ -174,10 +198,10 @@ namespace MazeGenSolve
             if (!Solving)
                 //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X*2 + 1)*10, (CurrentCell.Y*2 + 1)*10, 10, 10),
                 //Color.Red));
-                target.SetPixel((uint)CurrentCell.X*2+1, (uint)CurrentCell.Y*2+1, Color.Red);
+                target.SetPixel((uint)CurrentCell.X*2+1, (uint)CurrentCell.Y*2+1, CurrentCellColor);
             if (FinishedGenerating)
                 //r.Draw(Shape.Rectangle(new FloatRect((EndCell.X*2 + 1)*10, (EndCell.Y*2 + 1)*10, 10, 10), Color.Green));
-                target.SetPixel((uint) EndCell.X*2+1, (uint) EndCell.Y*2+1, Color.Green);
+                target.SetPixel((uint) EndCell.X*2+1, (uint) EndCell.Y*2+1, EndCellColor);
             if (Solving)
             {
                 for (int i = 0; i < VisitedWalls.GetLength(0); i++)
@@ -185,21 +209,21 @@ namespace MazeGenSolve
                         if (VisitedWalls[i, j])
                             //r.Draw(Shape.Rectangle(new FloatRect((i + 1)*10, (j + 1)*10, 10, 10),
                                                    //new Color(100, 100, 100)));
-                            target.SetPixel((uint) i + 1, (uint) j + 1, new Color(100, 100, 100));
+                            target.SetPixel((uint) i + 1, (uint) j + 1, VisitedCellColor);
                 foreach (IntPair i in CellStack)
                     //r.Draw(Shape.Rectangle(new FloatRect((i.X + 1)*10, (i.Y + 1)*10, 10, 10), Color.Green));
-                    target.SetPixel((uint) i.X + 1, (uint) i.Y + 1, Color.Green);
+                    target.SetPixel((uint) i.X + 1, (uint) i.Y + 1, PathColor);
                 //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X + 1) * 10, (CurrentCell.Y + 1) * 10, 10, 10),
                                        //Color.Red));
-                target.SetPixel((uint) (CurrentCell.X * (Solving ? 1 : 2) + 1), (uint) CurrentCell.Y + 1, Color.Red);
+                target.SetPixel((uint) (CurrentCell.X * (Solving ? 1 : 2) + 1), (uint) CurrentCell.Y + 1, CurrentCellColor);
             }
             //r.Draw(Shape.Rectangle(new FloatRect((StartCell.X*2 + 1)*10, (StartCell.Y*2 + 1)*10, 10, 10), Color.Blue));
-            target.SetPixel((uint) StartCell.X*2 + 1, (uint) StartCell.Y*2 + 1, Color.Blue);
+            target.SetPixel((uint) StartCell.X*2 + 1, (uint) StartCell.Y*2 + 1, BeginCellColor);
             var celltext = new Text((1/((RenderWindow)r).GetFrameTime()).ToString());//CurrentCell.ToString() + " " + EndCell.ToString() + " " + StartCell.ToString());
             celltext.Position = new Vector2(0, r.Height - celltext.GetRect().Height);
-            celltext.Color = Color.Black;
+            celltext.Color = BackgroundColor;
             r.Draw(new Sprite {Image = target, Scale = new Vector2(10, 10)});
-            r.Draw(Shape.Rectangle(celltext.GetRect(), Color.White));
+            r.Draw(Shape.Rectangle(celltext.GetRect(), ForegroundColor));
             r.Draw(celltext);
         }
 
@@ -254,6 +278,11 @@ namespace MazeGenSolve
                 BackTrackLevel = 0;
             }
             return true;
+        }
+
+        static Color ConvertColor(System.Drawing.Color c)
+        {
+            return new Color(c.R, c.G, c.B);
         }
     }
 

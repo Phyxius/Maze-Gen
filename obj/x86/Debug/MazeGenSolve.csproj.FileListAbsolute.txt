@@ -7,3 +7,7 @@ c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Debug\MazeGenSolve.pdb
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\bin\Debug\csfml-graphics-2.dll
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\bin\Debug\csfml-window-2.dll
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Debug\MazeGenSolve.SettingsDialog.resources
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\bin\Debug\MazeGenSolve.exe.config
