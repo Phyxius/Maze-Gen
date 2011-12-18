@@ -36,18 +36,13 @@ namespace MazeGenSolve
             videoMode = VideoMode.DesktopMode;
             RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.Titlebar);
             window.ShowMouseCursor(false);
-            window.Closed += (sender, e) => System.Windows.Forms.Application.Exit(); //((RenderWindow) sender).Close();
+            window.Closed += (sender, e) => System.Windows.Forms.Application.Exit();
             window.KeyPressed += (sender, e) => ((RenderWindow) sender).Close();
             SetUpMaze();
             target = new Image(VideoMode.DesktopMode.Width/10, VideoMode.DesktopMode.Height/10) { Smooth = false};
             float accumulator = 0;
             float WaitTime = 0;
             float fps = (float)Properties.Settings.Default.Framerate;
-            //while (GenerateIterate(CellStack, Cells, Walls)) ;
-            //FinishedGenerating = true;
-            //Solving = true;
-            //CellStack.Clear();
-            //while (SolveIterate(CellStack, Cells, Walls, StartCell, EndCell)) ;
             window.Show(true);
             while (window.IsOpened())
             {
@@ -61,8 +56,6 @@ namespace MazeGenSolve
                             WaitTime += window.GetFrameTime();
                         else
                         {
-                            //SetUpMaze();
-                            //FinishedGenerating = false;
                             WaitTime = 0;
                             CurrentCell = StartCell*2;
                             VisitedWalls[CurrentCell.X, CurrentCell.Y] = true;
@@ -147,7 +140,6 @@ namespace MazeGenSolve
                 cellStack.Push(CurrentCell);
             IntPair newpos = neighbors[r.Next(neighbors.Count)];
             VisitedWalls[newpos.X, newpos.Y] = true;
-            //VisitedWalls[(newpos.X*2 + CurrentCell.X*2)/2, (newpos.Y*2 + CurrentCell.Y*2)/2] = true;
             cellStack.Push(newpos);
             CurrentCell = newpos;
             return true;
@@ -162,9 +154,6 @@ namespace MazeGenSolve
             FinishedGenerating = false;
             Solving = false;
             CurrentCell = new IntPair();
-            /*for (int i = 0; i < Cells.GetLength(0); i++)
-                for (int j = 0; j < Cells.GetLength(1); j++)
-                    Cells[i, j] = (i%2 == 1);*/
             for (int i = 0; i < Walls.GetLength(0); i++)
                 for (int j = 0; j < Walls.GetLength(1); j++)
                 {
@@ -178,48 +167,28 @@ namespace MazeGenSolve
             {
                 return;
             }
-            //r.Draw(Shape.Rectangle(new FloatRect(0, 0, r.Width, r.Height), Color.Black));
-            /*for (uint i = 0; i < target.Width; i++)
-                for (uint j = 0; j < target.Height; j++)
-                    target.SetPixel(i+1, j+1, BackgroundColor);*/
             for (int i = 0; i < Walls.GetLength(0); i++)
                 for (int j = 0; j < Walls.GetLength(1); j++)
-                    if (!Walls[i,j] && !VisitedWalls[i, j]) //&& (!Solving || !CellStack.Contains(new IntPair(i, j))))
-                        //r.Draw(Shape.Rectangle(new FloatRect((i + 1)*10, (j + 1)*10, 10, 10), Color.White));
+                    if (!Walls[i,j] && !VisitedWalls[i, j])
                         target.SetPixel((uint)i + 1, (uint)j + 1, ForegroundColor);
                     else
                         target.SetPixel((uint)i+1, (uint) j+1, BackgroundColor);
-            /*for (int i = 0; i < Cells.GetLength(0); i++)
-                for (int j = 0; j < Cells.GetLength(1); j++)
-                {
-                    r.Draw(Shape.Rectangle(new FloatRect((i*2 + 1)*10, (j*2 + 1)*10, 10, 10),
-                                           Cells[i, j] ? Color.White : Color.Black));
-                }*/
             if (!Solving)
-                //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X*2 + 1)*10, (CurrentCell.Y*2 + 1)*10, 10, 10),
-                //Color.Red));
                 target.SetPixel((uint)CurrentCell.X*2+1, (uint)CurrentCell.Y*2+1, CurrentCellColor);
             if (FinishedGenerating)
-                //r.Draw(Shape.Rectangle(new FloatRect((EndCell.X*2 + 1)*10, (EndCell.Y*2 + 1)*10, 10, 10), Color.Green));
                 target.SetPixel((uint) EndCell.X*2+1, (uint) EndCell.Y*2+1, EndCellColor);
             if (Solving)
             {
                 for (int i = 0; i < VisitedWalls.GetLength(0); i++)
                     for (int j = 0; j < VisitedWalls.GetLength(1); j++)
                         if (VisitedWalls[i, j])
-                            //r.Draw(Shape.Rectangle(new FloatRect((i + 1)*10, (j + 1)*10, 10, 10),
-                                                   //new Color(100, 100, 100)));
                             target.SetPixel((uint) i + 1, (uint) j + 1, VisitedCellColor);
                 foreach (IntPair i in CellStack)
-                    //r.Draw(Shape.Rectangle(new FloatRect((i.X + 1)*10, (i.Y + 1)*10, 10, 10), Color.Green));
                     target.SetPixel((uint) i.X + 1, (uint) i.Y + 1, PathColor);
-                //r.Draw(Shape.Rectangle(new FloatRect((CurrentCell.X + 1) * 10, (CurrentCell.Y + 1) * 10, 10, 10),
-                                       //Color.Red));
                 target.SetPixel((uint) (CurrentCell.X * (Solving ? 1 : 2) + 1), (uint) CurrentCell.Y + 1, CurrentCellColor);
             }
-            //r.Draw(Shape.Rectangle(new FloatRect((StartCell.X*2 + 1)*10, (StartCell.Y*2 + 1)*10, 10, 10), Color.Blue));
             target.SetPixel((uint) StartCell.X*2 + 1, (uint) StartCell.Y*2 + 1, BeginCellColor);
-            var celltext = new Text((1/((RenderWindow)r).GetFrameTime()).ToString());//CurrentCell.ToString() + " " + EndCell.ToString() + " " + StartCell.ToString());
+            var celltext = new Text((1/((RenderWindow)r).GetFrameTime()).ToString());
             celltext.Position = new Vector2(0, r.Height - celltext.GetRect().Height);
             celltext.Color = BackgroundColor;
             r.Draw(new Sprite {Image = target, Scale = new Vector2(10, 10)});
@@ -270,7 +239,6 @@ namespace MazeGenSolve
             Walls[(newpos.X*2 + CurrentCell.X*2)/2, (newpos.Y*2 + CurrentCell.Y*2)/2] = false;
             CellStack.Push(newpos);
             CurrentCell = newpos;
-            //EndCell = newpos;
             BackTrackLevel++;
             if (BackTrackLevel >= 0)
             {
@@ -319,18 +287,6 @@ namespace MazeGenSolve
             {
                 return false;
             }
-            /*temp = neighbor*2 + new IntPair(1, 1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) - 1 && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || !Maze[temp.X, temp.Y]);
-            temp = neighbor*2 + new IntPair(1, -1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) - 1 && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || !Maze[temp.X, temp.Y]);
-            temp = neighbor*2 + new IntPair(-1, 1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) - 1 && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || !Maze[temp.X, temp.Y]);
-            temp = neighbor*2 + new IntPair(-1, -1);
-            if (temp.X < Maze.GetLength(0) && temp.Y < Maze.GetLength(1) - 1 && temp.X > 0 && temp.Y > 0)
-                ret = ret && (temp == start || !Maze[temp.X, temp.Y]);*/
             return ret;
         }
 
