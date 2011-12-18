@@ -38,5 +38,8 @@
     <Setting Name="PathColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Green</Value>
     </Setting>
+    <Setting Name="VerticalSync" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

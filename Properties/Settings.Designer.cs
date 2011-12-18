@@ -166,5 +166,17 @@ namespace MazeGenSolve.Properties {
                 this["PathColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool VerticalSync {
+            get {
+                return ((bool)(this["VerticalSync"]));
+            }
+            set {
+                this["VerticalSync"] = value;
+            }
+        }
     }
 }
