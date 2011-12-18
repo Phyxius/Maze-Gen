@@ -42,7 +42,7 @@ namespace MazeGenSolve
             target = new Image(VideoMode.DesktopMode.Width/10, VideoMode.DesktopMode.Height/10) { Smooth = false};
             float accumulator = 0;
             float WaitTime = 0;
-            float fps = .01f;
+            float fps = (float)Properties.Settings.Default.Framerate;
             //while (GenerateIterate(CellStack, Cells, Walls)) ;
             //FinishedGenerating = true;
             //Solving = true;
