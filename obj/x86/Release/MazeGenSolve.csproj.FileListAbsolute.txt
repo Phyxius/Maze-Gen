@@ -7,3 +7,7 @@ c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\ResolveAssemblyReference.cache
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\MazeGenSolve.exe
 c:\users\phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\MazeGenSolve.pdb
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\bin\Release\MazeGenSolve.exe.config
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\MazeGenSolve.SettingsDialog.resources
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\GenerateResource.read.1.tlog
+C:\Users\Phyxius\documents\visual studio 2010\Projects\MazeGenSolve\MazeGenSolve\obj\x86\Release\GenerateResource.write.1.tlog
