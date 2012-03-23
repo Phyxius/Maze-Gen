@@ -147,6 +147,7 @@
             this.checkBoxShowGeneration.TabIndex = 6;
             this.checkBoxShowGeneration.Text = "Show Generation";
             this.checkBoxShowGeneration.UseVisualStyleBackColor = true;
+            this.checkBoxShowGeneration.CheckedChanged += new System.EventHandler(this.checkBoxShowGeneration_CheckedChanged);
             // 
             // checkBoxShowSolving
             // 

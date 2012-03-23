@@ -49,6 +49,7 @@ namespace MazeGenSolve
             float WaitTime = 0;
             var fps = (float) Settings.Default.Framerate;
             window.Show(true);
+            bool hasrun = false;
             while (window.IsOpened())
             {
                 accumulator += window.GetFrameTime();
@@ -56,8 +57,10 @@ namespace MazeGenSolve
                 {
                     if (FinishedGenerating && !Solving)
                     {
-                        if (WaitTime < Settings.Default.WaitTime)
+                        if (WaitTime < Settings.Default.WaitTime && hasrun)
+                        {
                             WaitTime += window.GetFrameTime();
+                        }
                         else
                         {
                             WaitTime = 0;
@@ -65,6 +68,7 @@ namespace MazeGenSolve
                             VisitedWalls[CurrentCell.X, CurrentCell.Y] = true;
                             CellStack.Clear();
                             Solving = true;
+                            hasrun = true;
                         }
                         accumulator -= fps;
                         continue;
@@ -97,7 +101,10 @@ namespace MazeGenSolve
                     }
 
                     if (Settings.Default.ShowGeneration)
+                    {
                         FinishedGenerating = !GenerateIterate(CellStack, Cells, Walls);
+                        hasrun = true;
+                    }
                     else
                     {
                         while (GenerateIterate(CellStack, Cells, Walls)) ;

@@ -136,5 +136,10 @@ namespace MazeGenSolve
         {
             this.Close();
         }
+
+        private void checkBoxShowGeneration_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.ShowGeneration = checkBoxShowGeneration.Checked;
+        }
     }
 }
