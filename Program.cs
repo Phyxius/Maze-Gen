@@ -38,7 +38,7 @@ namespace MazeGenSolve
             Application.EnableVisualStyles();
             Application.Run(form);
             videoMode = VideoMode.DesktopMode;
-            RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.Titlebar);
+            RenderWindow window = new RenderWindow(videoMode, "Maze Crap", Styles.Fullscreen);
             window.EnableVerticalSync(Settings.Default.VerticalSync);
             window.ShowMouseCursor(false);
             window.Closed += (sender, e) => Application.Exit();
